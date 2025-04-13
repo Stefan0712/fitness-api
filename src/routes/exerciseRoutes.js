@@ -1,5 +1,5 @@
-import express from 'express';
-import Exercise from '../models/exerciseModel';
+const express = require('express');
+const Exercise = require('../models/exerciseModel');
 
 const router = express.Router();
 
@@ -112,4 +112,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export default router;
+
+
+
+module.exports = router;

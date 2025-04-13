@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) =>{
         }
     
         // Find the workout by id
-        const workout = await Workout.findById(id);
+        const workout = await Workout.findById(id).populate('exercises');
     
         // If the workout doesn't exist, send a 404 response
         if (!workout) {

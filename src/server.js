@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const workoutRoutes = require('./routes/workoutRoutes');
+const exerciseRoutes = require('./routes/exerciseRoutes');
 dotenv.config();
 
 const app = express();
@@ -22,11 +23,12 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/workout', workoutRoutes)
+app.use('/api/workout', workoutRoutes)
+app.use('/api/exercise', exerciseRoutes)
 
 
 // Test Route
-app.get('/', (req, res) => {
+app.get('/api/', (req, res) => {
   res.json({ message: 'API is working!' });
 });
 
