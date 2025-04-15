@@ -48,10 +48,6 @@ const workoutSchema = new mongoose.Schema({
     type: String,
   },
   imageUrl: String,
-  isFavorite: {
-    type: Boolean,
-    default: false,
-  },
   isCompleted: {
     type: Boolean,
     default: false,
