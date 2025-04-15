@@ -96,8 +96,16 @@ router.get('/:id', async (req, res) =>{
 });
 
 // Update a specific workout
-router.patch('/:id', (req, res) =>{
-
+router.put('/:id', async (req, res) =>{
+  try {
+      const updatedWorkout = await Workout.findByIdAndUpdate(req.params.id, req.body, { new: true });
+      if (!updatedWorkout) {
+        return res.status(404).json({ message: 'Workout not found' });
+      }
+      res.json(updatedWorkout);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating Workout' });
+    }
 });
 
 // Delete a specific workout
