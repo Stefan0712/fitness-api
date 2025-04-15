@@ -101,8 +101,16 @@ router.patch('/:id', (req, res) =>{
 });
 
 // Delete a specific workout
-router.delete('/:id', (req, res) =>{
-
+router.delete('/:id', async (req, res) =>{
+  try {
+      const workout = await Workout.findByIdAndDelete(req.params.id);
+      if (!workout) {
+        return res.status(404).json({ message: 'Workout not found' });
+      }
+      res.status(200).json({ message: 'Workout deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting workout' });
+    }
 });
 
 
