@@ -37,7 +37,7 @@ const workoutSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
   },
-  author: {
+  authorId: {
     type: String,
     required: true,
   },

@@ -6,11 +6,9 @@ const router = express.Router();
 // CREATE a new exercise
 router.post('/', async (req, res) => {
   const {
-    sourceId,
     createdAt,
-    author,
+    authorId,
     source,
-    isFavorite,
     isCompleted,
     name,
     description,
@@ -32,11 +30,9 @@ router.post('/', async (req, res) => {
 
   try {
     const newExercise = new Exercise({
-      sourceId,
-      source,
       createdAt,
-      author,
-      isFavorite,
+      authorId,
+      source,
       isCompleted,
       name,
       description,
@@ -59,6 +55,7 @@ router.post('/', async (req, res) => {
     await newExercise.save();
     res.status(201).json(newExercise);
   } catch (error) {
+    console.error(error)
     res.status(500).json({ message: 'Error creating exercise' });
   }
 });
@@ -69,6 +66,7 @@ router.get('/', async (req, res) => {
     const exercises = await Exercise.find();
     res.json(exercises);
   } catch (error) {
+    
     res.status(500).json({ message: 'Error fetching exercises' });
   }
 });
@@ -106,7 +104,7 @@ router.delete('/:id', async (req, res) => {
     if (!exercise) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
-    res.status(204).send();
+    res.status(200).json({ message: 'Exercise deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting exercise' });
   }

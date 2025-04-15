@@ -20,8 +20,51 @@ router.get('/', async (req, res) =>{
 });
 
 // Create a workout
-router.post('/', (req, res) =>{
+router.post('/', async (req, res) =>{
+  const {
+    createdAt, 
+    authorId,
+    isCompleted, 
+    name,
+    source, 
+    description, 
+    reference, 
+    difficulty, 
+    duration, 
+    durationUnit,
+    visibility,
+    imageUrl,
+    targetGroups, 
+    exercises, 
+    tags, 
+    equipment, 
+  } = req.body;
 
+  try{
+    const newWorkout = new Workout({
+      createdAt, 
+      authorId,
+      isCompleted, 
+      name,
+      source, 
+      description, 
+      reference, 
+      difficulty, 
+      duration, 
+      durationUnit,
+      visibility,
+      imageUrl,
+      targetGroups, 
+      exercises, 
+      tags, 
+      equipment,
+    })
+    await newWorkout.save();
+    res.status(201).json({ message: 'Workout created successfully' });
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ message: 'Error creating workout' });
+  }
 });
 
 // Get a specific workout

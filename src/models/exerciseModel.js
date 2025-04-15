@@ -32,12 +32,11 @@ const fieldSchema = new Schema({
 });
 
 const exerciseSchema = new Schema({
-  sourceId: { type: String },
-  author: { type: String, required: true },
+  authorId: { type: String, required: true },
   source: { type: String, required: true},
   createdAt: { type: String, required: true },
-  updatedAt: { type: String, default: null },
-  isCompleted: { type: Boolean, required: true },
+  updatedAt: { type: String, default: '' },
+  isCompleted: { type: Boolean, required: true, default: false },
   name: { type: String, required: true },
   description: { type: String },
   reference: { type: String, default: '' },
@@ -49,7 +48,7 @@ const exerciseSchema = new Schema({
   restUnit: { type: String, required: true },
   visibility: { type: String, required: true },
   fields: [fieldSchema],
-  notes: [{ type: String }],
+  notes: { type: String },
   equipment: [equipmentSchema],
   muscleGroups: [targetGroupSchema],
   tags: [tagSchema],
