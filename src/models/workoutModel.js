@@ -14,7 +14,7 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  targetGroup: [{
+  targetGroups: [{
     type: Object, 
     required: true,
   }],
