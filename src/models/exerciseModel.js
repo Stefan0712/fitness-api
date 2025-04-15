@@ -1,28 +1,38 @@
 const {mongoose, Schema} = require('mongoose');
 
 const targetGroupSchema = new Schema({
+  _id: false ,
+  id: { type: String, required: true },
   name: { type: String, required: true },
   author: { type: String, required: true },
 });
 
 const equipmentAttributesSchema = new Schema({
+  _id: false ,
+  id: { type: String, required: true },
   name: { type: String, required: true },
   value: { type: Number },
   unit: { type: String },
 });
 
 const equipmentSchema = new Schema({
+  _id: false ,
+  id: { type: String, required: true },
   name: { type: String, required: true },
   attributes: [equipmentAttributesSchema],
 });
 
 const tagSchema = new Schema({
+  _id: false ,
+  id: { type: String, required: true },
   name: { type: String, required: true },
   color: { type: String, required: true },
   author: { type: String, required: true },
 });
 
 const fieldSchema = new Schema({
+  _id: false ,
+  id: { type: String, required: true },
   name: { type: String, required: true },
   unit: { type: String, required: true },
   value: { type: Number, required: true },
