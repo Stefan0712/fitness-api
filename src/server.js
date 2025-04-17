@@ -137,6 +137,15 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+//logout route to remove the cookie
+app.post('/api/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'Strict',
+    secure: false,
+  });
+  res.status(200).json({ message: 'Logged out' });
+});
 
 // Test Route
 app.get('/api/', (req, res) => {
