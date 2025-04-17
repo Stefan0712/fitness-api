@@ -4,10 +4,12 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const workoutRoutes = require('./routes/workoutRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
+const userRoutes = require('./routes/userRoutes');
 dotenv.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/userModel');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -22,12 +24,19 @@ mongoose.connect(process.env.MONGO_URL)
   });
 
 // Middleware
-app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
-
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL, // Allow the specific frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods if needed
+    credentials: true, // Allow cookies to be sent
+  })
+);
 
 app.use('/api/workout', workoutRoutes)
 app.use('/api/exercise', exerciseRoutes)
+app.use('/api/user', userRoutes)
 
 // Login/Register routes
 
@@ -61,7 +70,13 @@ app.post('/api/auth/register', async (req, res)=>{
     // Generate token
     const token = jwt.sign({ id: newUser._id, username: newUser.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' } );
     console.log(token);
-    res.status(201).json({
+    res.cookie('token', token, {
+      httpOnly: true,
+      sameSite: 'Strict',
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
+    .status(201).json({
       message: 'User registered successfully',
       token,
       user: {
@@ -101,10 +116,14 @@ app.post('/api/auth/login', async (req, res) => {
       // Create JWT
       const token = jwt.sign( { id: user._id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' } );
 
-      // Optionally return user data
-      res.status(200).json({
+      res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'Strict',
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      })
+      .status(200).json({
           message: 'Login successful',
-          token,
           user: {
               id: user._id,
               username: user.username,
