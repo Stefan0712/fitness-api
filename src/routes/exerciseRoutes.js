@@ -155,15 +155,12 @@ router.delete('/:id', authenticateUser, async (req, res) => {
 });
 
 
-
+// Get all three arrays of exercises
 router.get('/my-exercises', authenticateUser, async (req, res) => {
   const userId = req.user.id;
 
   try {
     const userData = await User.findById(userId)
-      .populate('favoriteExercises')
-      .populate('createdExercises')
-      .populate('savedExercises');
 
     if (!userData) {
       return res.status(404).json({ message: "User not found." });
