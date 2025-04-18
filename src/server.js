@@ -26,13 +26,21 @@ mongoose.connect(process.env.MONGO_URL)
 // Middleware
 app.use(cookieParser());
 app.use(express.json());
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL, // Allow the specific frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific methods if needed
-    credentials: true, // Allow cookies to be sent
-  })
-);
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://192.168.1.10:3000"
+];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // required for cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 
 app.use('/api/workout', workoutRoutes)
 app.use('/api/exercise', exerciseRoutes)
@@ -118,12 +126,13 @@ app.post('/api/auth/login', async (req, res) => {
 
       res.cookie('token', token, {
         httpOnly: true,
-        sameSite: 'Strict',
-        secure: false,
+        sameSite: 'Lax',
+        secure: true,
         maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(200).json({
           message: 'Login successful',
+          token,
           user: {
               id: user._id,
               username: user.username,
@@ -153,6 +162,6 @@ app.get('/api/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
