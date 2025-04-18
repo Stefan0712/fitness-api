@@ -167,7 +167,7 @@ router.get('/my-exercises', authenticateUser, async (req, res) => {
     }
 
     const exercises = {
-      favorited: userData.favoriteExercises,
+      favorites: userData.favoriteExercises,
       created: userData.createdExercises,
       saved: userData.savedExercises
     };
