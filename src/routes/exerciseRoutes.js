@@ -85,7 +85,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET a specific exercise by ID
-router.get('/:id', authenticateUser, async (req, res) => {
+router.get('/view/:id', authenticateUser, async (req, res) => {
   const userId = req.user.id;
   const userData = await User.findById(userId);
   try {
@@ -158,7 +158,7 @@ router.delete('/:id', authenticateUser, async (req, res) => {
 // Get all three arrays of exercises
 router.get('/my-exercises', authenticateUser, async (req, res) => {
   const userId = req.user.id;
-
+  console.log("User id is :", userId)
   try {
     const userData = await User.findById(userId)
 
