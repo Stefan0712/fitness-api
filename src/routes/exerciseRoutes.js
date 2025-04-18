@@ -6,7 +6,11 @@ const authenticateUser = require('../middlewares/authenticate');
 const router = express.Router();
 
 // CREATE a new exercise
-router.post('/', async (req, res) => {
+router.post('/', authenticateUser, async (req, res) => {
+  const userId = req.user.id;
+  if(!userId){
+    return res.status(404).json({ message: 'You are not authenticated.' });
+  };
   const {
     createdAt,
     authorId,
@@ -54,7 +58,14 @@ router.post('/', async (req, res) => {
       instructions,
     });
 
-    await newExercise.save();
+    const createdExercise = await newExercise.save();
+
+    if(createdExercise){
+      const userData = await User.findById(userId);
+      userData.createdExercises.push(createdExercise._id);
+      await userData.save();
+    }
+
     res.status(201).json(newExercise);
   } catch (error) {
     console.error(error)
