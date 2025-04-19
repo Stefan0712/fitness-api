@@ -28,18 +28,19 @@ app.use(cookieParser());
 app.use(express.json());
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  "http://192.168.1.10:3000"
+  "http://192.168.1.10:3000",
+  "http://localhost:3000"
 ];
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || origin.includes("ngrok") || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  credentials: true, // required for cookies
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 
 app.use('/api/workout', workoutRoutes)
