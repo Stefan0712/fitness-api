@@ -157,14 +157,14 @@ router.post('/favorite/:id', authenticateUser, async (req, res) => {
     const user = await User.findById(req.user.id);
 
     const alreadyFavorited = user.favoriteWorkouts.includes(workoutId) || [];
-
+    const message = alreadyFavorited ? "Workout removed from favorites" : "Workout saved to favorites";
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       { [alreadyFavorited ? '$pull' : '$addToSet']: { favoriteWorkouts: workoutId } },
       { new: true }
     );
 
-    res.status(200).json({ favoriteWorkouts: updatedUser.favoriteWorkouts });
+    res.status(200).json({ message });
   } catch (error) {
     console.error('Error favoriting workout:', error);
     res.status(500).json({ message: 'Error favoriting workout' });
