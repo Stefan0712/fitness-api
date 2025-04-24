@@ -181,122 +181,43 @@ router.get('/my-exercises', authenticateUser, async (req, res) => {
 
 
 // Add to favorites
-router.post('/:id/favorite', authenticateUser, async (req, res)=>{
-  try{
-    const userId = req.user.id;
+router.post('/favorite/:id', authenticateUser, async (req, res)=>{
+  try {
     const exerciseId = req.params.id;
+    const user = await User.findById(req.user.id);
 
-    // Check if the exercise exists
-    const exercise = await Exercise.findById(exerciseId);
-    if(!exercise){
-      return res.status(404).json({message: "Exercise not found."})
-    };
+    const alreadyFavorited = user.favoriteExercises.includes(exerciseId);
+    const message = alreadyFavorited ? "Exercise removed from favorites" : "Exercise added to favorites";
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { [alreadyFavorited ? '$pull' : '$addToSet']: { favoriteExercises: exerciseId } },
+      { new: true }
+    );
 
-    const user = await User.findById(userId);
-
-    if(user.favoriteExercises.includes(exerciseId)) {
-      return res.status(400).json({message: "Exercise already in favorites."})
-    };
-
-    // If the exercise is not in favorites and it exists, then add it to favorites
-    user.favoriteExercises.push(exerciseId);
-    await user.save();
-
-    return res.status(200).json({message: "Exercise added to favorites."})
+    res.status(200).json({ message });
   } catch (error) {
-    console.error('Error adding to favorites: ',error);
-    return res.status(500).json({message: "Failed to add exercise to favorites. Server Error."})
-  }
-})
-// Remove from favorites
-router.delete('/:id/favorite', authenticateUser, async (req, res)=>{
-  try{
-    const userId = req.user.id;
-    const exerciseId = req.params.id;
-
-    if(!userId){
-      return res.status(404).json({message: "You are not authenticated."})
-    };
-    // Check if the exercise exists
-    const exercise = await Exercise.findById(exerciseId);
-    if(!exercise){
-      return res.status(404).json({message: "Exercise not found."})
-    };
-
-    const user = await User.findById(userId);
-
-    if(!user.favoriteExercises.includes(exerciseId)) {
-      return res.status(400).json({message: "Exercise is not in favorites."})
-    };
-
-    // If the exercise is in favorites and it exists, then remove it to favorites
-    const newFavoriteExercises = user.favoriteExercises.filter(item=>item!=exerciseId);
-    user.favoriteExercises = newFavoriteExercises;
-    await user.save();
-
-    return res.status(200).json({message: "Exercise removed from favorites."})
-  } catch (error) {
-    console.error('Error removing from favorites: ',error);
-    return res.status(500).json({message: "Failed to remove exercise from favorites. Server Error."})
+    console.error('Error favoriting exercise:', error);
+    res.status(500).json({ message: 'Error favoriting exercise' });
   }
 })
 // Add to saved exercises
-router.post('/:id/saved', authenticateUser, async (req, res)=>{
-  try{
-    const userId = req.user.id;
+router.post('/save/:id', authenticateUser, async (req, res)=>{
+  try {
     const exerciseId = req.params.id;
+    const user = await User.findById(req.user.id);
 
-    // Check if the exercise exists
-    const exercise = await Exercise.findById(exerciseId);
-    if(!exercise){
-      return res.status(404).json({message: "Exercise not found."})
-    };
+    const alreadySaved = user.savedExercises.includes(exerciseId);
+    const message = alreadySaved ? "Exercise removed from library" : "Exercise saved to library";
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      { [alreadySaved ? '$pull' : '$addToSet']: { savedExercises: exerciseId } },
+      { new: true }
+    );
 
-    const user = await User.findById(userId);
-
-    if(user.savedExercises.includes(exerciseId)) {
-      return res.status(400).json({message: "Exercise already in saved exercises."})
-    };
-
-    // If the exercise is not in saved and it exists, then add it to saved
-    user.savedExercises.push(exerciseId);
-    await user.save();
-
-    return res.status(200).json({message: "Exercise added to saved exercises."})
+    res.status(200).json({ message});
   } catch (error) {
-    console.error('Error adding to saved exercises: ',error);
-    return res.status(500).json({message: "Failed to add exercise to saved exercises. Server Error."})
-  }
-})
-// Remove from saved exercises
-router.delete('/:id/saved', authenticateUser, async (req, res)=>{
-  try{
-    const userId = req.user.id;
-    const exerciseId = req.params.id;
-    if(!userId){
-      return res.status(404).json({message: "You are not authenticated."})
-    };
-
-    // Check if the exercise exists
-    const exercise = await Exercise.findById(exerciseId);
-    if(!exercise){
-      return res.status(404).json({message: "Exercise not found."})
-    };
-    const user = await User.findById(userId);
-
-    if(!user.savedExercises.includes(exerciseId)) {
-      return res.status(400).json({message: "Exercise is not in favorites."})
-    };
-
-    // If the exercise is in saved exercises and it exists, then remove
-    const newSavedExercises = user.savedExercises.filter(item=>item!=exerciseId);
-    user.savedExercises = newSavedExercises;
-    await user.save();
-
-    return res.status(200).json({message: "Exercise removed from saved exercises."})
-  } catch (error) {
-    console.error('Error removing from saved exercises: ',error);
-    return res.status(500).json({message: "Failed to remove exercise from saved exercises. Server Error."})
+    console.error('Error saving exercise:', error);
+    res.status(500).json({ message: 'Error saving exercise' });
   }
 })
 
