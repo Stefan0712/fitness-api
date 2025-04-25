@@ -1,7 +1,7 @@
 const express = require('express');
 const Equipment = require('../models/equipmentModel');
 const User = require('../models/userModel');
-const authenticateUser = require('../middlewares/authenticateUser');
+const authenticateUser = require('../middlewares/authenticate');
 const defaultEquipment = require('../utils/defaultEquipment');
 
 const router = express.Router();
@@ -96,4 +96,4 @@ router.put('/:id', authenticateUser, async (req, res) => {
   
 
   
-export default router;
+module.exports = router;

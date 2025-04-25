@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const workoutRoutes = require('./routes/workoutRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const userRoutes = require('./routes/userRoutes');
+const equipmentRoutes = require('./routes/equipmentRoutes');
 dotenv.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -46,6 +47,7 @@ app.use(cors({
 app.use('/api/workout', workoutRoutes)
 app.use('/api/exercise', exerciseRoutes)
 app.use('/api/user', userRoutes)
+app.use('/api/equipment', equipmentRoutes)
 
 // Login/Register routes
 

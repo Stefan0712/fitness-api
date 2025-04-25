@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose")
 
 const EquipmentAttributeSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -17,7 +17,6 @@ const TargetGroupSchema = new mongoose.Schema({
 }, { _id: false });
 
 const EquipmentSchema = new mongoose.Schema({
-  _id: { type: String, required: true, unique: true }, 
   authorId: { type: String, required: true },
   name: { type: String, required: true },
   attributes: { type: [EquipmentAttributeSchema], default: [] },
@@ -29,4 +28,4 @@ const EquipmentSchema = new mongoose.Schema({
   urlName: { type: String }
 });
 
-export default mongoose.model('Equipment', EquipmentSchema);
+module.exports = mongoose.model('Equipment', EquipmentSchema);
