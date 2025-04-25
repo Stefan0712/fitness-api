@@ -2,6 +2,7 @@ const express = require('express');
 const Equipment = require('../models/equipmentModel');
 const User = require('../models/userModel');
 const authenticateUser = require('../middlewares/authenticateUser');
+const defaultEquipment = require('../utils/defaultEquipment');
 
 const router = express.Router();
 
@@ -14,6 +15,9 @@ router.get('/all', async (req, res)=>{
   }catch(error){
     res.status(500).json({message: "There was been an error getting all equipment"});
   }
+})
+router.get('/default', (req, res)=>{
+  res.json(defaultEquipment);
 })
 
 // Get all equipment, user's saved, and user's created
