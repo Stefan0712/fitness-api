@@ -10,14 +10,14 @@ const router = express.Router();
 router.get('/all', async (req, res)=>{
   try{
     const allEquipment = await Equipment.find();
-    res.json(allEquipment);
+    res.status(200).json(allEquipment);
 
   }catch(error){
     res.status(500).json({message: "There was been an error getting all equipment"});
   }
 })
 router.get('/default', (req, res)=>{
-  res.json(defaultEquipment);
+  res.status(200).json(defaultEquipment);
 })
 
 // Get all equipment, user's saved, and user's created
