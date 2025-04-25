@@ -40,13 +40,14 @@ router.get('/my-equipment', authenticateUser, async (req, res) => {
 // Create equipment and add to user's createdEquipment
 router.post('/create', authenticateUser, async (req, res) => {
   try {
-    const newEquipment = await Equipment.create(req.body);
+    const newEquipment = await Equipment.create(req.body.data);
     await User.findByIdAndUpdate(req.user.id, {
       $addToSet: { createdEquipment: newEquipment._id }
     }, { new: true, upsert: true });
 
     res.status(201).json({message: "Equipment created successfully"});
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: 'Failed to create equipment' });
   }
 });
