@@ -32,7 +32,9 @@ const userSchema = new Schema(
     savedExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
     savedWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
     createdExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
-    createdWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }]
+    createdWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
+    savedEquipment: [{ type: Schema.Types.ObjectId, ref: 'Equipment', default: [] }],
+    createdEquipment: [{ type: Schema.Types.ObjectId, ref: 'Equipment', default: [] }],
   },
   { timestamps: true }
 );
