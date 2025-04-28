@@ -97,8 +97,9 @@ router.post('/toggle-save/:id', authenticateUser, async (req, res) => {
 
 // Edit equipment
 router.put('/:id', authenticateUser, async (req, res) => {
+  console.log(req.body)
   try {
-    const updated = await Equipment.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true });
+    const updated = await Equipment.findOneAndUpdate({ _id: req.params.id }, req.body.data, { new: true });
     res.status(200).json(updated);
   } catch (error) {
     res.status(500).json({ error: 'Failed to edit equipment' });
