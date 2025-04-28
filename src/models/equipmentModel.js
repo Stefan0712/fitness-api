@@ -17,7 +17,7 @@ const TargetGroupSchema = new mongoose.Schema({
 }, { _id: false });
 
 const EquipmentSchema = new mongoose.Schema({
-  authorId: { type: String, required: true },
+  authorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   name: { type: String, required: true },
   attributes: { type: [EquipmentAttributeSchema], default: [] },
   description: { type: String },

@@ -25,7 +25,21 @@ router.get('/default', (req, res)=>{
 // Get all equipment, user's saved, and user's created
 router.get('/my-equipment', authenticateUser, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).populate('createdEquipment').populate('savedEquipment');
+    const user = await User.findById(req.user.id)
+  .populate({
+    path: 'createdEquipment',
+    populate: {
+      path: 'authorId',
+      select: 'username'
+    }
+  })
+  .populate({
+    path: 'savedEquipment',
+    populate: {
+      path: 'authorId',
+      select: 'username'
+    }
+  });
     res.status(200).json({ saved: user.savedEquipment, created: user.createdEquipment });
   } catch (error) {
     console.error(error)
