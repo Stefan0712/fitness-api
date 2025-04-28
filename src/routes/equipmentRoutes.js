@@ -15,7 +15,9 @@ router.get('/all', async (req, res)=>{
   }catch(error){
     res.status(500).json({message: "There was been an error getting all equipment"});
   }
-})
+});
+
+// Get default equipment (not created by the users)
 router.get('/default', (req, res)=>{
   res.status(200).json(defaultEquipment);
 })
@@ -23,16 +25,10 @@ router.get('/default', (req, res)=>{
 // Get all equipment, user's saved, and user's created
 router.get('/my-equipment', authenticateUser, async (req, res) => {
   try {
-    const [allEquipment, user] = await Promise.all([
-      Equipment.find(),
-      User.findById(req.user.id)
-    ]);
-
-    const saved = allEquipment.filter(eq => user.savedEquipment?.includes(eq.id));
-    const created = allEquipment.filter(eq => user.createdEquipment?.includes(eq.id));
-
-    res.status(200).json({ all: allEquipment, saved, created });
+    const user = await User.findById(req.user.id).populate('createdEquipment').populate('savedEquipment');
+    res.status(200).json({ saved: user.savedEquipment, created: user.createdEquipment });
   } catch (error) {
+    console.error(error)
     res.status(500).json({ error: 'Failed to fetch equipment' });
   }
 });
