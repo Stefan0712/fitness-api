@@ -79,7 +79,7 @@ app.post('/api/auth/register', async (req, res)=>{
     await newUser.save();
 
     // Generate token
-    const token = jwt.sign({ id: newUser._id, username: newUser.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1d' } );
+    const token = jwt.sign({ id: newUser._id, username: newUser.username, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1d' } );
     console.log(token);
     res.cookie('token', token, {
       httpOnly: true,
