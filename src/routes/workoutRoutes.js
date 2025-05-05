@@ -49,16 +49,16 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create a workout
-router.post('/', async (req, res) => {
+router.post('/',authenticateUser, async (req, res) => {
   const {
-    name, source, description, reference,
+    authorId, name, source, description, reference,
     difficulty, duration, durationUnit,
     visibility, imageUrl, targetGroups,
     exercises, tags, equipment
   } = req.body;
-
   try {
     const newWorkout = new Workout({
+      authorId,
       name,
       source,
       description,
@@ -74,7 +74,7 @@ router.post('/', async (req, res) => {
       equipment,
       isCompleted: false,
       createdAt: new Date(),
-      authorId: req.userId
+      authorId: req.user.id
     });
 
     const savedWorkout = await newWorkout.save();

@@ -9,10 +9,12 @@ const workoutSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
+    default: 'Description not set'
   },
   difficulty: {
     type: String,
     required: true,
+    default: 'beginner'
   },
   targetGroups: [{
     type: Object, 
@@ -21,6 +23,7 @@ const workoutSchema = new mongoose.Schema({
   duration: {
     type: Number, 
     required: true,
+    default: 0,
   },
   equipment: [{
     type: Object, 
@@ -63,7 +66,7 @@ const workoutSchema = new mongoose.Schema({
   }],
   reference: {
     type: String,
-    default: ''
+    default: 'Not set'
   },
   phases: [{
     type: mongoose.Schema.Types.ObjectId,
