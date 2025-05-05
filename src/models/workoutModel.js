@@ -1,5 +1,25 @@
 const mongoose = require('mongoose');
-
+const PhaseSchema = new mongoose.Schema({
+  id: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  order: {
+    type: Number,
+    required: true,
+  },
+  exercises: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Exercise', 
+      required: true,
+    },
+  ],
+});
 const workoutSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -68,10 +88,10 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     default: 'Not set'
   },
-  phases: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Exercise',
-  }]
+  phases: {
+    type: [PhaseSchema],
+    default: []
+  }
 });
 
 

@@ -2,6 +2,7 @@ const express = require('express');
 const Workout = require('../models/workoutModel');
 const User = require('../models/userModel');
 const authenticateUser = require('../middlewares/authenticate');
+const mongoose = require('mongoose');
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.get('/my-workouts', authenticateUser, async (req, res) => {
 // Get a specific workout
 router.get('/:id', async (req, res) => {
   try {
-    const workout = await Workout.findById(req.params.id).populate('exercises');
+    const workout = await Workout.findById(req.params.id).populate('phases.exercises');
     if (!workout) return res.status(404).json({ message: 'Workout not found' });
     res.status(200).json(workout);
   } catch (error) {
@@ -54,8 +55,9 @@ router.post('/',authenticateUser, async (req, res) => {
     authorId, name, source, description, reference,
     difficulty, duration, durationUnit,
     visibility, imageUrl, targetGroups,
-    exercises, tags, equipment
+    exercises, tags, equipment, phases
   } = req.body;
+  console.log(phases)
   try {
     const newWorkout = new Workout({
       authorId,
@@ -72,6 +74,7 @@ router.post('/',authenticateUser, async (req, res) => {
       exercises,
       tags,
       equipment,
+      phases: phases.map(phase => ({...phase, exercises: phase.exercises.map(id => new mongoose.Types.ObjectId(id))})),
       isCompleted: false,
       createdAt: new Date(),
       authorId: req.user.id
