@@ -22,7 +22,6 @@ router.get('/', async (req, res) => {
 router.get('/my-workouts', authenticateUser, async (req, res) => {
   try {
     const user = await User.findById(req.user.id)
-    console.log(user)
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -85,7 +84,7 @@ router.post('/', async (req, res) => {
       { $addToSet: { createdWorkouts: savedWorkout._id } }
     );
 
-    res.status(201).json(savedWorkout);
+    res.status(201).json({message: 'Successfully created a new workout'});
   } catch (error) {
     console.error('Error creating workout:', error);
     res.status(500).json({ message: 'Error creating workout' });

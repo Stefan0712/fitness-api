@@ -46,6 +46,7 @@ const workoutSchema = new mongoose.Schema({
   },
   authorId: {
     type: String,
+    required: true,
   },
   imageUrl: String,
   isCompleted: {
@@ -64,6 +65,10 @@ const workoutSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  phases: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Exercise',
+  }]
 });
 
 
