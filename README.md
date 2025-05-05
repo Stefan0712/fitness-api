@@ -70,7 +70,7 @@ In future updates you will be able to plan your workouts and exercises, allowing
 | POST   | /api/equipment/all              | Login user                     | ✅ Working  |
 | GET    | /api/equipment/default          | Get full user data             | ✅ Working  |
 | POST   | /api/equipment/my-equipment     | Login user                     | ✅ Working  |
-| GET    | /api/equipment/create           | Create equipment               | ✅ Working  |
+| POST    | /api/equipment/create           | Create equipment               | ✅ Working  |
 | GET    | /api/equipment/:id              | Get equipment by id            | ✅ Working  |
 | POST   | /api/equipment/toggle-save/:id  | Add or remove from library     | ✅ Working  |
 | PUT    | /api/equipment/:id              | Update equipment               | ✅ Working  |
