@@ -1,7 +1,7 @@
 const express = require('express');
 const Post = require('../models/postModel');
-const StatusPost = require('../models/statusPostModel.ts');
 const User = require('../models/userModel');
+const Comment = require('../models/commentModel');
 const authenticateUser = require('../middlewares/authenticate');
 
 const router = express.Router();
@@ -11,12 +11,10 @@ const router = express.Router();
 router.get('/', async (req, res)=>{
     try{
         const posts = await Post.find().populate('author', 'username _id').populate('comments');
-        const statusPosts = await StatusPost.find().populate('author', 'username _id').populate('comments');
-        if(!posts || !statusPosts){
+        if(!posts){
             return res.status(404).json({ message: 'Posts not found' });
         }
-        const sorted = [...posts, ...statusPosts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        res.status(200).json(sorted);
+        res.status(200).json(posts);
     }catch(error){
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -38,30 +36,12 @@ router.get('/:postId', async (req, res)=>{
 })
 router.post('/', authenticateUser, async (req, res) => {
     try {
-      const postData = req.body;
-      postData.author = req.user.id;
-  
-      const newPost = new Post(postData);
-      const savedPost = await newPost.save();
-  
-      await User.findByIdAndUpdate(req.user.id, {
-        $push: { createdPosts: savedPost._id }
-      });
-  
-      res.status(201).json(savedPost);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Error creating post' });
-    }
-  });
-router.post('/status-post', authenticateUser, async (req, res) => {
-    try {
       const {title, body, tags, privacy} = req.body;
       if (!title || !body || !privacy) {
         return res.status(400).json({ message: "Missing required fields" });
       }      
       const createdAt = new Date();
-      const newStatusPost = {
+      const newPostData = {
         author: req.user.id,
         type: 'status',
         title,
@@ -74,7 +54,7 @@ router.post('/status-post', authenticateUser, async (req, res) => {
 
       }
   
-      const newPost = new StatusPost(newStatusPost);
+      const newPost = new Post(newPostData);
       const savedPost = await newPost.save();
   
       await User.findByIdAndUpdate(req.user.id, {

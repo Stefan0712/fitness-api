@@ -5,17 +5,16 @@ const postSchema = new Schema(
   {
     createdAt: {type: String, required: true},
     title: {type: String, required: true},
-    content: {type: String, required: true},
+    body: {type: String, required: true},
     likes: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    dislikes: [{type: Schema.Types.ObjectId, ref: 'User'}],
     comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
-    author: {type: Schema.Types.ObjectId, ref: 'User'},
+    author: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     linkedItems: [{
-    type: { type: String, enum: ['Workout', 'Exercise', 'Equipment'], required: true},
-    refId: {type: Schema.Types.ObjectId, required: true, refPath: 'linkedItems.type' }}],
+      type: { type: String, enum: ['Workout', 'Exercise', 'Equipment']},
+      refId: {type: Schema.Types.ObjectId, refPath: 'linkedItems.type' }}
+    ],
     visibility: {type: String, default: 'public'},
     archived: {type: Boolean, default: false},
-
   }
 );
 

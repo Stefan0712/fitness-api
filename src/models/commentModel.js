@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const commentSchema = new Schema({
-  message: {
+  body: {
     type: String,
     required: true,
     trim: true,
@@ -25,11 +25,8 @@ const commentSchema = new Schema({
   },
   likes: [{
     type: Schema.Types.ObjectId,
-    ref: 'User'
-  }],
-  dislikes: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: [], 
   }],
   createdAt: {
     type: Date,
@@ -52,4 +49,5 @@ const commentSchema = new Schema({
   }
 });
 
-module.exports = model('Comment', commentSchema);
+const Comment = mongoose.model('Comment', commentSchema);
+module.exports = Comment;

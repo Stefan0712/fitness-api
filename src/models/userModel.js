@@ -11,8 +11,10 @@ const userSchema = new Schema(
     friends: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
     followers: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
     following: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
-    comments: [{ type: Schema.Types.ObjectId, ref: 'Comment', default: [] }],
-    posts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+    createdComments: [{ type: Schema.Types.ObjectId, ref: 'Comment', default: [] }],
+    likedComments: [{ type: Schema.Types.ObjectId, ref: 'Comment', default: [] }],
+    createdPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
+    likedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
     likes: [{ type: Schema.Types.ObjectId, ref: 'Like', default: [] }],
     savedPosts: [{ type: Schema.Types.ObjectId, ref: 'Post', default: [] }],
     
