@@ -13,7 +13,6 @@ router.post('/', authenticateUser, async (req, res) => {
   };
   const {
     createdAt,
-    authorId,
     source,
     isCompleted,
     name,
@@ -37,7 +36,7 @@ router.post('/', authenticateUser, async (req, res) => {
   try {
     const newExercise = new Exercise({
       createdAt,
-      authorId,
+      authorId: userId,
       source,
       isCompleted,
       name,
@@ -66,7 +65,7 @@ router.post('/', authenticateUser, async (req, res) => {
       await userData.save();
     }
 
-    res.status(201).json(newExercise);
+    res.status(201).json({message:"Successfully created exercise"});
   } catch (error) {
     console.error(error)
     res.status(500).json({ message: 'Error creating exercise' });
@@ -93,8 +92,13 @@ router.get('/view/:id', authenticateUser, async (req, res) => {
     if (!exercise) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
-    if ((exercise.isPrivate && userId !== exercise.authorId) || userData.role==='admin') {
-      return res.status(404).json({ message: 'Exercise is private' });
+    if (exercise.isPrivate && userId !== exercise.authorId ) {
+      if(userData.role==='admin'){
+        res.json(exercise);
+      }else{
+        return res.status(404).json({ message: 'Exercise is private' });
+      }
+      
     }
     res.json(exercise);
   } catch (error) {
@@ -159,19 +163,17 @@ router.delete('/:id', authenticateUser, async (req, res) => {
 router.get('/my-exercises', authenticateUser, async (req, res) => {
   const userId = req.user.id;
   try {
-    const userData = await User.findById(userId)
+    const userData = await User.findById(userId).populate('favoriteExercises').populate('createdExercises').populate('savedExercises')
 
     if (!userData) {
       return res.status(404).json({ message: "User not found." });
     }
 
-    const exercises = {
+    res.status(200).json({
       favorites: userData.favoriteExercises,
       created: userData.createdExercises,
       saved: userData.savedExercises
-    };
-
-    res.status(200).json({ exercises });
+    });
 
   } catch (error) {
     console.error("There has been an error fetching all three exercises arrays:", error);

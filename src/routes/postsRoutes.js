@@ -1,5 +1,6 @@
 const express = require('express');
 const Post = require('../models/postModel');
+const StatusPost = require('../models/statusPostModel.ts');
 const User = require('../models/userModel');
 const authenticateUser = require('../middlewares/authenticate');
 
@@ -9,11 +10,13 @@ const router = express.Router();
 
 router.get('/', async (req, res)=>{
     try{
-        const posts = await Post.find().populate('authorId', 'username _id');
-        if(!posts){
+        const posts = await Post.find().populate('author', 'username _id');
+        const statusPosts = await StatusPost.find().populate('author', 'username _id');
+        if(!posts || !statusPosts){
             return res.status(404).json({ message: 'Posts not found' });
         }
-        res.status(200).json(posts);
+        const sorted = [...posts, ...statusPosts].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+        res.status(200).json(sorted);
     }catch(error){
         console.error(error);
         res.status(500).json({ message: 'Server error' });
@@ -23,7 +26,7 @@ router.get('/', async (req, res)=>{
 router.get('/:postId', async (req, res)=>{
     const {postId} = req.params;
     try{
-        const post = await Post.findById(postId).populate('authorId', 'username _id');
+        const post = await Post.findById(postId).populate('author', 'username _id');
         if(!post){
             return res.status(404).json({ message: 'Post not found' });
         }
@@ -36,9 +39,42 @@ router.get('/:postId', async (req, res)=>{
 router.post('/', authenticateUser, async (req, res) => {
     try {
       const postData = req.body;
-      postData.authorId = req.user.id;
+      postData.author = req.user.id;
   
       const newPost = new Post(postData);
+      const savedPost = await newPost.save();
+  
+      await User.findByIdAndUpdate(req.user.id, {
+        $push: { createdPosts: savedPost._id }
+      });
+  
+      res.status(201).json(savedPost);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error creating post' });
+    }
+  });
+router.post('/status-post', authenticateUser, async (req, res) => {
+    try {
+      const {title, body, tags, privacy} = req.body;
+      if (!title || !body || !privacy) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }      
+      const createdAt = new Date();
+      const newStatusPost = {
+        author: req.user.id,
+        type: 'status',
+        title,
+        body,
+        tags: Array.isArray(tags) ? tags : [],
+        privacy,
+        createdAt,
+        likes: [],
+        comments: [],
+
+      }
+  
+      const newPost = new StatusPost(newStatusPost);
       const savedPost = await newPost.save();
   
       await User.findByIdAndUpdate(req.user.id, {
@@ -132,5 +168,9 @@ router.post('/', authenticateUser, async (req, res) => {
       res.status(500).json({ message: 'Error toggling like' });
     }
   });
+
+
+
+module.exports = router;
 
   

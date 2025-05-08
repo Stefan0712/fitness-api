@@ -6,6 +6,7 @@ const workoutRoutes = require('./routes/workoutRoutes');
 const exerciseRoutes = require('./routes/exerciseRoutes');
 const userRoutes = require('./routes/userRoutes');
 const equipmentRoutes = require('./routes/equipmentRoutes');
+const postsRoutes = require('./routes/postsRoutes');
 dotenv.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -48,12 +49,12 @@ app.use('/api/workout', workoutRoutes)
 app.use('/api/exercise', exerciseRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/equipment', equipmentRoutes)
+app.use('/api/post', postsRoutes)
 
 // Login/Register routes
 
 app.post('/api/auth/register', async (req, res)=>{
   const {username, email, password} = req.body;
-  console.log(req.body);
   try{
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'All fields are required.' });
@@ -80,7 +81,6 @@ app.post('/api/auth/register', async (req, res)=>{
 
     // Generate token
     const token = jwt.sign({ id: newUser._id, username: newUser.username, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1d' } );
-    console.log(token);
     res.cookie('token', token, {
       httpOnly: true,
       sameSite: 'Strict',

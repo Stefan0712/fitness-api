@@ -18,7 +18,7 @@ const equipmentAttributesSchema = new Schema({
 const equipmentSchema = new Schema({
   _id: false ,
   id: { type: String, required: true },
-  name: { type: String, required: true },
+  name: { type: String, required: true, default: 'Name not set' },
   attributes: [equipmentAttributesSchema],
 });
 
@@ -33,12 +33,12 @@ const tagSchema = new Schema({
 const fieldSchema = new Schema({
   _id: false ,
   id: { type: String, required: true },
-  name: { type: String, required: true },
-  unit: { type: String, required: true },
-  value: { type: Number, required: true },
+  name: { type: String, required: true, default: 'Name not set' },
+  unit: { type: String, required: true, default: 'No unit' },
+  value: { type: Number, required: true, default: 0 },
   target: { type: Number },
   description: { type: String },
-  isCompleted: { type: Boolean, required: true },
+  isCompleted: { type: Boolean, default: false },
 });
 
 const exerciseSchema = new Schema({
@@ -51,10 +51,10 @@ const exerciseSchema = new Schema({
   description: { type: String },
   reference: { type: String, default: '' },
   difficulty: { type: String, required: true },
-  sets: { type: Number, required: true },
-  duration: { type: Number, required: true },
+  sets: { type: Number, required: true, default: 1 },
+  duration: { type: Number, required: true, default: 0 },
   durationUnit: { type: String, required: true, default: 'min' },
-  rest: { type: Number, required: true },
+  rest: { type: Number, required: true, default: 45 },
   restUnit: { type: String, required: true },
   visibility: { type: String, required: true },
   fields: [fieldSchema],
