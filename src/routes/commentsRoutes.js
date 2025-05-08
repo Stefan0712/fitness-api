@@ -26,32 +26,57 @@ router.get('/:postId', async (req, res)=>{
 // Create a comment
 router.post('/:postId', authenticateUser, async (req, res) => {
     try {
-      const {body} = req.body;
-      const {postId} = req.params;
+      const { body, parentId } = req.body;
+      const { postId } = req.params;
       const authorId = req.user.id;
-
+  
       const commentData = {
         author: authorId,
         postId,
         body,
+        parentId,
         createdAt: new Date()
-      }
+      };
+  
+      // Create and save the comment
       const newComment = new Comment(commentData);
       const savedComment = await newComment.save();
   
-      await User.findByIdAndUpdate(req.user.id, {
+      if (parentId) {
+        // Find the parent comment
+        const parentComment = await Comment.findById(parentId);
+  
+        // Check if the parent already has a parentId (i.e., it’s a nested comment)
+        if (parentComment.parentId) {
+          return res.status(400).json({ message: "A comment can only have one parent. You can't add more comments to this comment" });
+        }
+  
+        // Push the new comment ID to the parent's comments array
+        await Comment.findByIdAndUpdate(parentId, {
+          $push: { comments: savedComment._id }
+        });
+      }
+  
+      // Update the user and post with the new comment
+      await User.findByIdAndUpdate(authorId, {
         $push: { createdComments: savedComment._id }
       });
-      await Post.findByIdAndUpdate(postId, {
-        $push: { comments: savedComment._id }
-      });
   
+      if(!parentId){
+        await Post.findByIdAndUpdate(postId, {
+            $push: { comments: savedComment._id }
+          });
+      }
+  
+      // Respond with the created comment
       res.status(201).json(savedComment);
+  
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Error creating comment' });
     }
-});
+  });
+  
 
 
 router.post('/status-post', authenticateUser, async (req, res) => {
