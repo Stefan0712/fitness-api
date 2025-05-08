@@ -10,8 +10,8 @@ const router = express.Router();
 
 router.get('/', async (req, res)=>{
     try{
-        const posts = await Post.find().populate('author', 'username _id');
-        const statusPosts = await StatusPost.find().populate('author', 'username _id');
+        const posts = await Post.find().populate('author', 'username _id').populate('comments');
+        const statusPosts = await StatusPost.find().populate('author', 'username _id').populate('comments');
         if(!posts || !statusPosts){
             return res.status(404).json({ message: 'Posts not found' });
         }
@@ -26,7 +26,7 @@ router.get('/', async (req, res)=>{
 router.get('/:postId', async (req, res)=>{
     const {postId} = req.params;
     try{
-        const post = await Post.findById(postId).populate('author', 'username _id');
+        const post = await Post.findById(postId).populate('author', 'username _id').populate('comments');
         if(!post){
             return res.status(404).json({ message: 'Post not found' });
         }
