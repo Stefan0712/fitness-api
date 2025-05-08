@@ -6,7 +6,7 @@ const commentSchema = new Schema({
     type: String,
     required: true,
     trim: true,
-    maxlength: 1000 // Optional limit to prevent abuse
+    maxlength: 1000
   },
   author: {
     type: Schema.Types.ObjectId,
@@ -51,3 +51,5 @@ const commentSchema = new Schema({
     default: false
   }
 });
+
+module.exports = model('Comment', commentSchema);
