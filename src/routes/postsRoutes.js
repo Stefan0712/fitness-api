@@ -1,7 +1,6 @@
 const express = require('express');
 const Post = require('../models/postModel');
 const User = require('../models/userModel');
-const Comment = require('../models/commentModel');
 const authenticateUser = require('../middlewares/authenticate');
 
 const router = express.Router();

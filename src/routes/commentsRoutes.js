@@ -12,7 +12,15 @@ const router = express.Router();
 router.get('/:postId', async (req, res)=>{
     const {postId} = req.params;
     try{
-        const comments = await Comment.find({postId}).populate('author', 'username _id').populate('comments');
+        const comments = await Comment.find({ postId, parentId: null }) // only top-level comments
+        .populate('author', 'username _id') // author of top-level comments
+        .populate({
+          path: 'comments', // nested comments
+          populate: {
+            path: 'author',
+            select: 'username _id' // author of nested comments
+          }
+        });
         if(!comments){
             return res.status(404).json({ message: 'Comments not found' });
         }
@@ -29,7 +37,6 @@ router.post('/:postId', authenticateUser, async (req, res) => {
       const { body, parentId } = req.body;
       const { postId } = req.params;
       const authorId = req.user.id;
-  
       const commentData = {
         author: authorId,
         postId,
@@ -40,6 +47,7 @@ router.post('/:postId', authenticateUser, async (req, res) => {
   
       // Create and save the comment
       const newComment = new Comment(commentData);
+      console.log(commentData)
       const savedComment = await newComment.save();
   
       if (parentId) {
@@ -50,7 +58,7 @@ router.post('/:postId', authenticateUser, async (req, res) => {
         if (parentComment.parentId) {
           return res.status(400).json({ message: "A comment can only have one parent. You can't add more comments to this comment" });
         }
-  
+        console.log("Subcomment added to a comment", parentId)
         // Push the new comment ID to the parent's comments array
         await Comment.findByIdAndUpdate(parentId, {
           $push: { comments: savedComment._id }
@@ -63,6 +71,7 @@ router.post('/:postId', authenticateUser, async (req, res) => {
       });
   
       if(!parentId){
+        console.log("Subcomment added to post")
         await Post.findByIdAndUpdate(postId, {
             $push: { comments: savedComment._id }
           });
@@ -137,32 +146,64 @@ router.post('/status-post', authenticateUser, async (req, res) => {
 
   router.delete('/:id', authenticateUser, async (req, res) => {
     const userId = req.user.id;
+    const commentId = req.params.id;
+  
     try {
       if (!userId) {
-        return res.status(404).json({ message: 'You are not authenticated.' });
+        return res.status(401).json({ message: 'You are not authenticated.' });
       }
   
-      const post = await Post.findById(req.params.id);
-      if (!post) {
-        return res.status(404).json({ message: 'Post not found' });
+      const comment = await Comment.findById(commentId);
+      if (!comment) {
+        return res.status(404).json({ message: 'Comment not found.' });
       }
   
       const userData = await User.findById(userId);
+      const isAuthor = comment.author.toString() === userId;
+      const isAdmin = userData?.role === 'admin';
   
-      if (post.author.toString() === userId || userData.role === 'admin') {
-        await Post.findByIdAndDelete(req.params.id);
-        await User.findByIdAndUpdate(userId, {
-            $pull: { createdPosts: req.params.id }
-          });
-        return res.status(200).json({ message: 'Post deleted successfully' });
-      } else {
-        return res.status(403).json({ message: 'You do not have the permission to delete this post' });
+      if (!isAuthor && !isAdmin) {
+        return res.status(403).json({ message: 'You do not have permission to delete this comment.' });
       }
-      
+  
+    await Comment.findByIdAndDelete(commentId);
+
+    if (!comment.parentId) {
+    const subcomments = await Comment.find({ parentId: commentId });
+
+    for (const subcomment of subcomments) {
+        await User.findByIdAndUpdate(subcomment.author, {
+        $pull: { createdComments: subcomment._id }
+        });
+
+        await Comment.findByIdAndDelete(subcomment._id);
+    }
+    }
+  
+      await User.findByIdAndUpdate(comment.author, {
+        $pull: { createdComments: commentId }
+      });
+  
+      if (!comment.parentId) {
+        await Post.findByIdAndUpdate(comment.postId, {
+          $pull: { comments: commentId }
+        });
+      }
+  
+      if (comment.parentId) {
+        await Comment.findByIdAndUpdate(comment.parentId, {
+          $pull: { comments: commentId }
+        });
+      }
+  
+      return res.status(200).json({ message: 'Comment deleted successfully.' });
+  
     } catch (error) {
-      res.status(500).json({ message: 'Error deleting post' });
+      console.error('Error deleting comment:', error);
+      res.status(500).json({ message: 'Server error while deleting comment.' });
     }
   });
+  
 
 
   router.put('/:id/like', authenticateUser, async (req, res) => {

@@ -7,6 +7,7 @@ const exerciseRoutes = require('./routes/exerciseRoutes');
 const userRoutes = require('./routes/userRoutes');
 const equipmentRoutes = require('./routes/equipmentRoutes');
 const postsRoutes = require('./routes/postsRoutes');
+const commentRoutes = require('./routes/commentsRoutes');
 dotenv.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -50,6 +51,7 @@ app.use('/api/exercise', exerciseRoutes)
 app.use('/api/user', userRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/post', postsRoutes)
+app.use('/api/comment', commentRoutes)
 
 // Login/Register routes
 

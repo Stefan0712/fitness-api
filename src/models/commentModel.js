@@ -18,7 +18,7 @@ const commentSchema = new Schema({
     ref: 'Post',
     required: true
   },
-  parentCommentId: {
+  parentId: {
     type: Schema.Types.ObjectId,
     ref: 'Comment',
     default: null
@@ -42,6 +42,10 @@ const commentSchema = new Schema({
   reportedBy: [{
     type: Schema.Types.ObjectId,
     ref: 'User'
+  }],
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
   }],
   isDeleted: {
     type: Boolean,
