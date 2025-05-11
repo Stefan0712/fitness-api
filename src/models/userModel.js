@@ -29,14 +29,41 @@ const userSchema = new Schema(
     role: { type: String, default: 'user' },
     isPrivate: { type: Boolean, default: true },
 
+    // EXERCISES
     favoriteExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
-    favoriteWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
     savedExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
-    savedWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
     createdExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],
+
+    // WORKOUTS
+    savedWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
     createdWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
+    favoriteWorkouts: [{ type: Schema.Types.ObjectId, ref: 'Workout', default: [] }],
+
+    // EQUIPMENT
     savedEquipment: [{ type: Schema.Types.ObjectId, ref: 'Equipment', default: [] }],
     createdEquipment: [{ type: Schema.Types.ObjectId, ref: 'Equipment', default: [] }],
+    // FOODS
+    createdFoods: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Food' }],
+    savedFoods: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Food' }],
+    favoriteFoods: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Food' }],
+
+    // WORKOUTS
+    createdWorkouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
+    savedWorkouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
+    favoriteWorkouts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Workout' }],
+
+    // ACTIVITY PLANS
+    createdActivityPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ActivityPlan' }],
+    savedActivityPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ActivityPlan' }],
+    favoriteActivityPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ActivityPlan' }],
+
+    // MEAL PLANS
+    createdMealPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MealPlan' }],
+    savedMealPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MealPlan' }],
+    favoriteMealPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'MealPlan' }],
+
+    // GOALS
+    goals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Goal' }]
   },
   { timestamps: true }
 );
