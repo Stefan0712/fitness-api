@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const authenticateUser = require('../middleware/authenticateUser');
+const authenticateUser = require('../middlewares/authenticate');
 
 const Goal = require('../models/goalModel');
 const Log = require('../models/logModel');

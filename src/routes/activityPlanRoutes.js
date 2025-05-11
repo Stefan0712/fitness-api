@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const ActivityPlan = require('../models/ActivityPlan');
-const User = require('../models/User');
-const authenticateUser = require('../middleware/authenticateUser');
-const ActivityDayTemplate = require('../models/activityDayTemplateModel');
+const ActivityPlan = require('../models/activityPlanModel');
+const User = require('../models/userModel');
+const authenticateUser = require('../middlewares/authenticate');
+const ActivityDayTemplate = require('../models/dayTemplateModel');
 
 // Create an activity plan
 router.post('/', authenticateUser, async (req, res) => {
@@ -148,7 +148,6 @@ router.get('/', authenticateUser, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch activity plans' });
   }
 });
-const ActivityDayTemplate = require('../models/activityDayTemplateModel');
 
 // Save a day as a reusable template
 router.post('/save-day-template', authenticateUser, async (req, res) => {

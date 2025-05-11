@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const MealPlan = require('../models/MealPlan');
-const User = require('../models/User');
-const authenticateUser = require('../middleware/authenticateUser');
+const MealPlan = require('../models/mealPlanModel');
+const User = require('../models/userModel');
+const authenticateUser = require('../middlewares/authenticate');
 
 // Create a meal plan
 router.post('/', authenticateUser, async (req, res) => {

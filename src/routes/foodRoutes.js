@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Food = require('../models/Food');
-const User = require('../models/User');
-const authenticateUser = require('../middleware/authenticateUser');
+const Food = require('../models/foodModel');
+const User = require('../models/userModel');
+const authenticateUser = require('../middlewares/authenticate');
 
 // Create a new food
 router.post('/', authenticateUser, async (req, res) => {

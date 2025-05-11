@@ -8,12 +8,19 @@ const userRoutes = require('./routes/userRoutes');
 const equipmentRoutes = require('./routes/equipmentRoutes');
 const postsRoutes = require('./routes/postsRoutes');
 const commentRoutes = require('./routes/commentsRoutes');
+
+const foodRoutes = require('./routes/foodRoutes');
+const activityPlanRoutes = require('./routes/activityPlanRoutes');
+const mealPlanRoutes = require('./routes/mealPlanRoutes');
+const goalRoutes = require('./routes/goalRoutes');
+const logRoutes = require('./routes/logRoutes');
+
 dotenv.config();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/userModel');
 const cookieParser = require('cookie-parser');
-
+const authenticateUser = require('./middlewares/authenticate');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -52,6 +59,13 @@ app.use('/api/user', userRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/post', postsRoutes)
 app.use('/api/comment', commentRoutes)
+
+app.use('/api/food', authenticateUser, foodRoutes);
+app.use('/api/activityPlan', authenticateUser, activityPlanRoutes);
+app.use('/api/mealPlan', authenticateUser, mealPlanRoutes);
+app.use('/api/goal', authenticateUser, goalRoutes);
+app.use('/api/log', authenticateUser, logRoutes);
+
 
 // Login/Register routes
 
