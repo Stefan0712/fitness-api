@@ -27,15 +27,14 @@ const userSchema = new Schema(
     badges: [{ type: Schema.Types.ObjectId, ref: 'Badge', default: [] }],
 
     role: { type: String, default: 'user' },
-    isPrivate: { type: Boolean, default: true },
     profileSettings:{
-      showProfile: {type: Boolean, default: true},
-      showMyWorkouts: {type: Boolean, default: true},
-      showMyExercises: {type: Boolean, default: true},
-      showMyActivity: {type: Boolean, default: true},
-      showMyDetails: {type: Boolean, default: true},
-      showMyPosts: {type: Boolean, default: true},
-      showMyPlans: {type: Boolean, default: true},
+      showProfile: {type: String, default: 'private'},
+      showMyWorkouts: {type: String, default: 'private'},
+      showMyExercises: {type: String, default: 'private'},
+      showMyActivity: {type: String, default: 'private'},
+      showMyDetails: {type: String, default: 'private'},
+      showMyPosts: {type: String, default: 'private'},
+      showMyPlans: {type: String, default: 'private'},
     },
 
     // EXERCISES
