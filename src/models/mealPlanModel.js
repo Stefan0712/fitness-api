@@ -32,7 +32,7 @@ const MealPlanSchema = new Schema({
   description: String,
   tags: [String],
   visibility: { type: String, enum: ['private', 'public', 'friends'], default: 'private' },
-  createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   goals: [{ type: Schema.Types.ObjectId, ref: 'Goal' }],
   days: [MealPlanDaySchema],
   createdAt: { type: Date, default: Date.now }

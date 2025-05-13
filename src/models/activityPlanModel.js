@@ -20,7 +20,7 @@ const ActivityPlanSchema = new Schema({
   tags: [String],
   difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
   visibility: { type: String, enum: ['private', 'public', 'friends'], default: 'private' },
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   days: {
     mon: DaySchema,
     tue: DaySchema,

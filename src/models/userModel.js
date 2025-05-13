@@ -28,6 +28,15 @@ const userSchema = new Schema(
 
     role: { type: String, default: 'user' },
     isPrivate: { type: Boolean, default: true },
+    profileSettings:{
+      showProfile: {type: Boolean, default: true},
+      showMyWorkouts: {type: Boolean, default: true},
+      showMyExercises: {type: Boolean, default: true},
+      showMyActivity: {type: Boolean, default: true},
+      showMyDetails: {type: Boolean, default: true},
+      showMyPosts: {type: Boolean, default: true},
+      showMyPlans: {type: Boolean, default: true},
+    },
 
     // EXERCISES
     favoriteExercises: [{ type: Schema.Types.ObjectId, ref: 'Exercise', default: [] }],

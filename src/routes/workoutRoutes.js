@@ -22,12 +22,12 @@ router.get('/', async (req, res) => {
 // Get user's workouts (saved, favorite, created)
 router.get('/my-workouts', authenticateUser, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id)
+    const user = await User.findById(req.user.id).populate('savedWorkouts').populate('createdWorkouts').populate('favoriteWorkouts')
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.json({
+    res.status(200).json({
       saved: user.savedWorkouts,
       favorites: user.favoriteWorkouts,
       created: user.createdWorkouts,
