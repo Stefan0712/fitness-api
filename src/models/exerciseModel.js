@@ -42,8 +42,8 @@ const fieldSchema = new Schema({
 });
 
 const exerciseSchema = new Schema({
-  authorId: { type: String, required: true },
-  source: { type: String, required: true},
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  createdBy: { type: String, default: 'user'},
   createdAt: { type: String, required: true },
   updatedAt: { type: String, default: '' },
   isCompleted: { type: Boolean, required: true, default: false },
@@ -63,6 +63,7 @@ const exerciseSchema = new Schema({
   muscleGroups: [targetGroupSchema],
   tags: [tagSchema],
   instructions: [{ type: String }],
+  media: [{url: String, type: String}]
 });
 
 // Create the Exercise model

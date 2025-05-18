@@ -60,14 +60,14 @@ const workoutSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
   },
-  authorId: {
+  author: {
     type: String,
     required: true,
   },
   source: {
     type: String,
   },
-  authorId: {
+  author: {
     type: String,
     required: true,
   },
@@ -91,7 +91,8 @@ const workoutSchema = new mongoose.Schema({
   phases: {
     type: [PhaseSchema],
     default: []
-  }
+  },
+  notes: { type: String, default: 'No notes' },
 });
 
 

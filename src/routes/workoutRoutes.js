@@ -52,7 +52,7 @@ router.get('/:id', async (req, res) => {
 // Create a workout
 router.post('/',authenticateUser, async (req, res) => {
   const {
-    authorId, name, source, description, reference,
+    author, name, source, description, reference,
     difficulty, duration, durationUnit,
     visibility, imageUrl, targetGroups,
     exercises, tags, equipment, phases
@@ -60,7 +60,7 @@ router.post('/',authenticateUser, async (req, res) => {
   console.log(phases)
   try {
     const newWorkout = new Workout({
-      authorId,
+      author,
       name,
       source,
       description,
@@ -77,7 +77,7 @@ router.post('/',authenticateUser, async (req, res) => {
       phases: phases.map(phase => ({...phase, exercises: phase.exercises.map(id => new mongoose.Types.ObjectId(id))})),
       isCompleted: false,
       createdAt: new Date(),
-      authorId: req.user.id
+      author: req.user.id
     });
 
     const savedWorkout = await newWorkout.save();

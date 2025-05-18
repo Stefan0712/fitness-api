@@ -13,7 +13,7 @@ router.post('/', authenticateUser, async (req, res) => {
   };
   const {
     createdAt,
-    source,
+    createdBy,
     isCompleted,
     name,
     description,
@@ -36,8 +36,8 @@ router.post('/', authenticateUser, async (req, res) => {
   try {
     const newExercise = new Exercise({
       createdAt,
-      authorId: userId,
-      source,
+      author: userId,
+      createdBy,
       isCompleted,
       name,
       description,
@@ -73,12 +73,63 @@ router.post('/', authenticateUser, async (req, res) => {
 });
 
 // GET all exercises
-router.get('/', async (req, res) => {
+router.get('/', authenticateUser, async (req, res) => {
+  const userId = req.user?.id;
+  const { created, saved, favorites, app } = req.query;
+
   try {
-    const exercises = await Exercise.find();
-    res.json(exercises);
+    const hasFilters = created === 'true' || saved === 'true' || favorites === 'true';
+
+    // Base field selection + author population
+    const projection = app ? {} : '_id name muscleGroups tags sets author';
+    const populateAuthor = {
+      path: 'author',
+      select: '_id username',
+    };
+
+    // If filters are applied, use them
+    if (hasFilters && userId) {
+      const user = await User.findById(userId).lean();
+
+      const exerciseMap = new Map(); // key: _id.toString(), value: exercise object
+
+      const processExercises = async (ids, flag) => {
+        const exercises = await Exercise.find({ _id: { $in: ids } })
+          .select(projection)
+          .populate(populateAuthor)
+          .lean();
+
+        for (const ex of exercises) {
+          const idStr = ex._id.toString();
+          if (!exerciseMap.has(idStr)) {
+            ex[flag] = true;
+            exerciseMap.set(idStr, ex);
+          } else {
+            exerciseMap.get(idStr)[flag] = true; // Add extra flag
+          }
+        }
+      };
+
+      const promises = [];
+      if (saved === 'true') promises.push(processExercises(user.savedExercises, 'isSaved'));
+      if (favorites === 'true') promises.push(processExercises(user.favoriteExercises, 'isFavorited'));
+      if (created === 'true') promises.push(processExercises(user.createdExercises, 'isCreated'));
+
+      await Promise.all(promises);
+
+      return res.status(200).json([...exerciseMap.values()]);
+    }
+
+    // No filters — return all public exercises
+    const publicExercises = await Exercise.find()
+      .select(projection)
+      .populate(populateAuthor)
+      .lean();
+
+    return res.status(200).json(publicExercises);
+
   } catch (error) {
-    
+    console.error(error);
     res.status(500).json({ message: 'Error fetching exercises' });
   }
 });
@@ -92,7 +143,7 @@ router.get('/view/:id', authenticateUser, async (req, res) => {
     if (!exercise) {
       return res.status(404).json({ message: 'Exercise not found' });
     }
-    if (exercise.isPrivate && userId !== exercise.authorId ) {
+    if (exercise.isPrivate && userId !== exercise.author ) {
       if(userData.role==='admin'){
         res.json(exercise);
       }else{
@@ -119,7 +170,7 @@ try {
     }
 
     // Check if the logged-in user is the author of the exercise
-    if (exercise.authorId.toString() !== userId) {
+    if (exercise.author.toString() !== userId) {
       return res.status(403).json({ message: "You are not authorized to edit this exercise." });
     }
 
@@ -146,7 +197,7 @@ router.delete('/:id', authenticateUser, async (req, res) => {
 
     const userData = await User.findById(userId);
 
-    if (exercise.authorId.toString() === userId || userData.role === 'admin') {
+    if (exercise.author.toString() === userId || userData.role === 'admin') {
       await Exercise.findByIdAndDelete(req.params.id);
       return res.status(200).json({ message: 'Exercise deleted successfully' });
     } else {
@@ -159,27 +210,7 @@ router.delete('/:id', authenticateUser, async (req, res) => {
 });
 
 
-// Get all three arrays of exercises
-router.get('/my-exercises', authenticateUser, async (req, res) => {
-  const userId = req.user.id;
-  try {
-    const userData = await User.findById(userId).populate('favoriteExercises').populate('createdExercises').populate('savedExercises')
 
-    if (!userData) {
-      return res.status(404).json({ message: "User not found." });
-    }
-
-    res.status(200).json({
-      favorites: userData.favoriteExercises,
-      created: userData.createdExercises,
-      saved: userData.savedExercises
-    });
-
-  } catch (error) {
-    console.error("There has been an error fetching all three exercises arrays:", error);
-    res.status(500).json({ message: 'There has been an error fetching all three exercises arrays.' });
-  }
-});
 
 
 // Add to favorites
@@ -190,7 +221,7 @@ router.post('/favorite/:id', authenticateUser, async (req, res)=>{
 
     const alreadyFavorited = user.favoriteExercises.includes(exerciseId);
     const message = alreadyFavorited ? "Exercise removed from favorites" : "Exercise added to favorites";
-    const updatedUser = await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       req.user.id,
       { [alreadyFavorited ? '$pull' : '$addToSet']: { favoriteExercises: exerciseId } },
       { new: true }

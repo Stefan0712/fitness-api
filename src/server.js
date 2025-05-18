@@ -39,7 +39,8 @@ app.use(express.json());
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://192.168.1.10:3000",
-  "http://localhost:3000"
+  "http://localhost:3000",
+  "http://localhost:3006",
 ];
 app.use(cors({
   origin: function (origin, callback) {
@@ -142,7 +143,16 @@ app.post('/api/auth/login', async (req, res) => {
 
       // Create JWT
       const token = jwt.sign( { id: user._id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' } );
-
+      const profileData = {
+            username: user.username,
+            name: user.name,
+            bio: user.bio,
+            age: user.age,
+            gender: user.gender,
+            height: user.height,
+            weight: user.weight,
+            profileSettings: user.profileSettings
+        }
       res.cookie('token', token, {
         httpOnly: true,
         sameSite: 'Lax',
@@ -156,7 +166,8 @@ app.post('/api/auth/login', async (req, res) => {
               id: user._id,
               username: user.username,
               role: user.role,
-          }
+          },
+          profileData
       });
 
   } catch (err) {
@@ -169,8 +180,8 @@ app.post('/api/auth/login', async (req, res) => {
 app.post('/api/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    sameSite: 'Strict',
-    secure: false,
+    sameSite: 'Lax',
+    secure: true,
   });
   res.status(200).json({ message: 'Logged out' });
 });
