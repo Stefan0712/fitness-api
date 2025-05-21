@@ -67,10 +67,6 @@ const workoutSchema = new mongoose.Schema({
   source: {
     type: String,
   },
-  author: {
-    type: String,
-    required: true,
-  },
   imageUrl: String,
   isCompleted: {
     type: Boolean,
